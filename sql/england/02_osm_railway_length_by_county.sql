@@ -23,4 +23,4 @@ WHERE
 GROUP BY 
     aa.name, aa.geom
 ORDER BY 
-    rail_length_km;
+    rail_length_km DESC;
