@@ -1,6 +1,6 @@
 -- Query 2: Railway length by county
 -- Purpose: Calculate total railway length (in kilometers) within each county using all railway feature classes.
--- Administrative boundary tag: https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative
+-- Administrative boundary tag: OSM boundary=administrative
 
 -- Check unique fclass values in adminareas_a 
 -- Use administrative level value (in this case, level 6 for county) for WHERE clause
@@ -13,7 +13,7 @@
 SELECT 
     aa.name AS county_name,
     SUM(ST_Length(ST_Intersection(aa.geom, r.geom)::geography)) / 1000 AS rail_length_km,
-    aa.geom
+    aa.geom AS geom
 FROM 
     adminareas_a AS aa
 JOIN 

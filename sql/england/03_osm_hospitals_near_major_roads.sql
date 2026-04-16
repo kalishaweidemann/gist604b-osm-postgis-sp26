@@ -1,6 +1,6 @@
 -- Query 3: Hospitals near major roads
 -- Purpose: Identify hospitals located within 1 km of major roads (motorway, trunk, primary).
--- Roads tagging: https://wiki.openstreetmap.org/wiki/Key:highway
+-- Road classes are based on the OSM highway tagging scheme.
 
 -- Check unique fclass values in pois table to find hospital value for WHERE clause
 -- SELECT DISTINCT fclass FROM pois;
