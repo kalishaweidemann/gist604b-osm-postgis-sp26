@@ -9,24 +9,30 @@
 -- Check unique fclass values in railways (including all types, no filtering)
 -- SELECT DISTINCT fclass FROM railways;
 
--- Intersect railways with admin boundaries and sum segment lengths
+WITH county_metrics AS (
+    SELECT
+        aa.name AS county_name,
+        SUM(ST_Length(ST_Intersection(r.geom, aa.geom)::geography)) / 1000 AS total_rail_length_km,
+        ST_Area(aa.geom::geography) / 1000000 AS county_area_sq_km,
+        aa.geom AS geom
+    FROM
+        adminareas_a AS aa
+    JOIN
+        railways AS r
+        ON ST_Intersects(aa.geom, r.geom)
+    WHERE
+        aa.fclass = 'admin_level6'
+    GROUP BY
+        aa.name, aa.geom
+)
+
 SELECT
-    aa.name AS county_name,
-    SUM(ST_Length(ST_Intersection(aa.geom, r.geom)::geography)) / 1000 AS rail_length_km,
-    (
-        SUM(ST_Length(ST_Intersection(aa.geom, r.geom)::geography)) / 1000
-    ) / (
-        ST_Area(aa.geom::geography) / 1000000
-    ) AS rail_density_sqkm,
-    aa.geom AS geom
+    county_name,
+    total_rail_length_km,
+    county_area_sq_km,
+    total_rail_length_km / county_area_sq_km AS rail_density_km_per_sq_km,
+    geom
 FROM
-    adminareas_a AS aa
-JOIN
-    railways AS r
-    ON ST_Intersects(aa.geom, r.geom)
-WHERE
-    aa.fclass = 'admin_level6'
-GROUP BY
-    aa.name, aa.geom
+    county_metrics
 ORDER BY
-    rail_density_sqkm DESC;
+    rail_density_km_per_sq_km DESC;
